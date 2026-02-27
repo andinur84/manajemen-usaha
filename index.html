@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manajemen Usaha Sederhana</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    .section { margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    button { margin-top: 10px; padding: 8px 12px; }
+    input, select { padding: 6px; margin: 5px 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>📦 Manajemen Usaha</h1>
+
+  <!-- Produk -->
+  <div class="section">
+    <h2>Manajemen Stok Produk</h2>
+    <input id="namaProduk" placeholder="Nama Produk">
+    <input id="stokProduk" type="number" placeholder="Jumlah Stok">
+    <button onclick="tambahProduk()">Tambah Produk</button>
+    <table id="tabelProduk">
+      <tr><th>Nama</th><th>Stok</th></tr>
+    </table>
+  </div>
+
+  <!-- Penjualan -->
+  <div class="section">
+    <h2>Penjualan</h2>
+    <input id="produkJual" placeholder="Nama Produk">
+    <input id="jumlahJual" type="number" placeholder="Jumlah">
+    <select id="ekspedisi">
+      <option value="JNE">JNE</option>
+      <option value="TIKI">TIKI</option>
+      <option value="POS">POS Indonesia</option>
+      <option value="SiCepat">SiCepat</option>
+      <option value="J&T">J&T</option>
+    </select>
+    <input id="ongkir" type="number" placeholder="Biaya Kirim (Rp)">
+    <button onclick="tambahPenjualan()">Tambah Penjualan</button>
+    <table id="tabelPenjualan">
+      <tr><th>Produk</th><th>Jumlah</th><th>Ekspedisi</th><th>Ongkir</th></tr>
+    </table>
+  </div>
+
+  <!-- Invoice -->
+  <div class="section">
+    <h2>Invoice</h2>
+    <button onclick="cetakInvoice()">Cetak Invoice</button>
+    <div id="invoiceArea"></div>
+  </div>
+
+  <!-- Export -->
+  <div class="section">
+    <h2>Export Data</h2>
+    <button onclick="exportCSV()">Export ke CSV</button>
+  </div>
+
+<script>
+  let produkList = [];
+  let penjualanList = [];
+
+  function tambahProduk() {
+    const nama = document.getElementById("namaProduk").value;
+    const stok = document.getElementById("stokProduk").value;
+    produkList.push({nama, stok});
+    renderProduk();
+  }
+
+  function renderProduk() {
+    const tabel = document.getElementById("tabelProduk");
+    tabel.innerHTML = "<tr><th>Nama</th><th>Stok</th></tr>";
+    produkList.forEach(p => {
+      tabel.innerHTML += `<tr><td>${p.nama}</td><td>${p.stok}</td></tr>`;
+    });
+  }
+
+  function tambahPenjualan() {
+    const produk = document.getElementById("produkJual").value;
+    const jumlah = document.getElementById("jumlahJual").value;
+    const ekspedisi = document.getElementById("ekspedisi").value;
+    const ongkir = document.getElementById("ongkir").value;
+    penjualanList.push({produk, jumlah, ekspedisi, ongkir});
+    renderPenjualan();
+  }
+
+  function renderPenjualan() {
+    const tabel = document.getElementById("tabelPenjualan");
+    tabel.innerHTML = "<tr><th>Produk</th><th>Jumlah</th><th>Ekspedisi</th><th>Ongkir</th></tr>";
+    penjualanList.forEach(p => {
+      tabel.innerHTML += `<tr><td>${p.produk}</td><td>${p.jumlah}</td><td>${p.ekspedisi}</td><td>${p.ongkir}</td></tr>`;
+    });
+  }
+
+  function cetakInvoice() {
+    let html = "<h3>Invoice</h3><table><tr><th>Produk</th><th>Jumlah</th><th>Ekspedisi</th><th>Ongkir</th></tr>";
+    penjualanList.forEach(p => {
+      html += `<tr><td>${p.produk}</td><td>${p.jumlah}</td><td>${p.ekspedisi}</td><td>${p.ongkir}</td></tr>`;
+    });
+    html += "</table>";
+    document.getElementById("invoiceArea").innerHTML = html;
+    window.print(); // Bisa dicetak dengan printer termal/tinta
+  }
+
+  function exportCSV() {
+    let csv = "Produk,Jumlah,Ekspedisi,Ongkir\n";
+    penjualanList.forEach(p => {
+      csv += `${p.produk},${p.jumlah},${p.ekspedisi},${p.ongkir}\n`;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "data_penjualan.csv");
+    a.click();
+  }
+</script>
+</body>
+</html>
